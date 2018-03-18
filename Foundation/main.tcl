@@ -22,6 +22,7 @@ source "foundation.elements.tcl"
 
 # recorder gmsh output disp
 recorder gmsh eleoutput eleResponse updatetime
+recorder gmsh updatetime updatetime
 
 
 
@@ -49,7 +50,7 @@ pattern Plain 1 "Linear" {
 }
 
 
-test NormDispIncr 1.0e-6 25 1
+test NormDispIncr 1.0e-6 25 0
 algorithm Newton
 # algorithm NewtonLineSearch -type Bisection
 # algorithm ModifiedNewton
@@ -62,7 +63,7 @@ integrator LoadControl $first_step_factor
 analysis Static
 analyze 1
 
-exit 0
+# exit 0
 
 
 
