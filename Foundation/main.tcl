@@ -22,7 +22,7 @@ source "foundation.elements.tcl"
 
 # recorder gmsh output disp
 recorder gmsh eleoutput eleResponse updatetime
-recorder gmsh elementgraph graph
+
 
 
 if {$PARALLEL == 1} {
