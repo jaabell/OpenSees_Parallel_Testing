@@ -4,7 +4,7 @@ import matplotlib.pylab as plt
 import glob
 
 
-files = glob.glob("updatetime.updatetime.*.4.out")
+files = glob.glob("updatetime.updatetime.*.8.out")
 
 files.sort()
 
