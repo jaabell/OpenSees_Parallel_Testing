@@ -1,11 +1,11 @@
 model BasicBuilder -ndm 3 -ndf 3
 
+set rank [getPID]
+set nproc [getNP]
 
-if {[llength $argv] > 0} {
-    set PARALLEL [lindex $argv 0]
-} else {
-    set PARALLEL 0
-}
+
+puts "rank   =   $rank"
+puts "nproc   =   $nproc"
 
 source "units.tcl"
 source "foundation.parameters.tcl"
@@ -14,35 +14,24 @@ source "foundation.fixities.tcl"
 source "foundation.materials.tcl"
 source "foundation.elements.tcl"
 
-# pattern Plain 1 "Linear" {
-#     source "foundation.loads_gravity.tcl"
-# }
-
-
 
 # recorder gmsh output disp
 recorder gmsh eleoutput eleResponse updatetime
 recorder gmsh updatetime updatetime
 
 
-
-if {$PARALLEL == 1} {
-    system SparseGEN
+if {$nproc > 1} {
+    # Parallel processing mode
     constraints Plain
     numberer Plain
+    system Mumps
+    # system SparseGEN
 } else {
-    system UmfPack
+    # Sequential processing mode
     constraints Plain
-    numberer RCM    
-    set recid [recorder pvd disp disp]
+    numberer RCM
+    system UmfPack
 }
-
-
-
-# recorder Node -file "disps.out" -nodeRange 1 [llength [getNodeTags]] -time -dof 1 2 3 disp
-# recorder Element -file "stresses.out" -eleRange 1 [llength [getEleTags]] -time stresses 
-# recorder Element -file "time.out" -eleRange 1 [llength [getEleTags]] -time updatetime 
-
 
 
 pattern Plain 1 "Linear" {
@@ -50,8 +39,9 @@ pattern Plain 1 "Linear" {
 }
 
 
-test NormDispIncr 1.0e-6 25 0
+test NormDispIncr 1.0e-6 25 1
 algorithm Newton
+# algorithm Linear
 # algorithm NewtonLineSearch -type Bisection
 # algorithm ModifiedNewton
 set Nsteps_grav 1
@@ -63,15 +53,13 @@ integrator LoadControl $first_step_factor
 analysis Static
 analyze 1
 
-# exit 0
 
 
 
 integrator LoadControl [expr (1-$first_step_factor)/$Nsteps_grav]
 analyze $Nsteps_grav
 
-if {$PARALLEL == 1} {
-} else {
+if {$nproc == 1} {
 remove recorder $recid
 }
 
@@ -81,9 +69,7 @@ setTime 0.0
 
 puts "Vertical loading stage"
 
-if {$PARALLEL == 1} {
-    
-} else {
+if {$nproc == 1} {
     recorder pvd disp2 disp
 }
 
