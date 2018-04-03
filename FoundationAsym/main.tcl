@@ -8,11 +8,11 @@ puts "rank   =   $rank"
 puts "nproc   =   $nproc"
 
 source "units.tcl"
-source "foundation.parameters.tcl"
-source "foundation.nodes.tcl"
-source "foundation.fixities.tcl"
-source "foundation.materials.tcl"
-source "foundation.elements.tcl"
+source "foundationasym.parameters.tcl"
+source "foundationasym.nodes.tcl"
+source "foundationasym.fixities.tcl"
+source "foundationasym.materials.tcl"
+source "foundationasym.elements.tcl"
 
 
 # recorder gmsh output disp
@@ -35,7 +35,7 @@ if {$nproc > 1} {
 
 
 pattern Plain 1 "Linear" {
-    source "foundation.loads_gravity.tcl"
+    source "foundationasym.loads_gravity.tcl"
 }
 
 
@@ -77,7 +77,7 @@ if {$nproc == 1} {
 }
 
 pattern Plain 2 "Linear" {
-    source "foundation.loads_axial.tcl"
+    source "foundationasym.loads_axial.tcl"
 }
 
 
