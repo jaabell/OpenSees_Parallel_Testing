@@ -18,13 +18,15 @@ source "foundation.elements.tcl"
 # recorder gmsh output disp
 recorder gmsh eleoutput eleResponse updatetime
 recorder gmsh updatetime updatetime
+recorder gmsh nodeoutput disp
+
 
 
 if {$nproc > 1} {
     # Parallel processing mode
     constraints Plain
     numberer Plain
-    # system Mumps
+    #system Mumps
     system SparseGEN
 } else {
     # Sequential processing mode
@@ -48,6 +50,9 @@ set Nsteps_grav 1
 
 set first_step_factor 0.001
 
+partitioner MetisWithTopology
+balancer TopologicalBalancer
+
 puts "Self weight stage Nsteps=$Nsteps_grav"
 integrator LoadControl $first_step_factor 
 analysis Static
@@ -55,7 +60,7 @@ analyze 1
 
 puts "Done self weight"
 
-exit 0
+#exit 0
 
 
 
