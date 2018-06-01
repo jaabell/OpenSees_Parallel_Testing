@@ -1,0 +1,16 @@
+equalDOF 7 14  1 2
+equalDOF 8 15  1 2
+equalDOF 9 16  1 2
+equalDOF 10 17  1 2
+equalDOF 48 52  1 2
+equalDOF 49 53  1 2
+equalDOF 50 54  1 2
+equalDOF 51 55  1 2
+equalDOF 56 60  1 2
+equalDOF 57 61  1 2
+equalDOF 58 62  1 2
+equalDOF 59 63  1 2
+equalDOF 64 68  1 2
+equalDOF 65 69  1 2
+equalDOF 66 70  1 2
+equalDOF 67 71  1 2
