@@ -1,5 +1,14 @@
 model BasicBuilder -ndm 3 -ndf 3
 
+set max_unbalance [lindex $::argv 0] 
+set nsteps_balance [lindex $::argv 1] 
+set strategy [lindex $::argv 2] 
+
+
+puts "max_unbalance = $max_unbalance"
+puts "nsteps_balance = $nsteps_balance"
+puts "strategy = $strategy"
+
 set BALANCE_ALWAYS 0 
 set BALANCE_ALWAYS_NSTEPS 1
 set BALANCE_EXCEED 2
@@ -24,7 +33,7 @@ source "foundation.elements.tcl"
 recorder gmsh global updatetime
 recorder gmsh eleoutput eleResponse updatetime
 
-
+recorder Node -closeOnWrite -file "nodedisp.out" -time -node 1 -dof 1 2 3 disp
 
 if {$nproc > 1} {
     # Parallel processing mode
@@ -33,10 +42,10 @@ if {$nproc > 1} {
     # system Mumps
     system SparseGEN
     partitioner MetisWithTopology
-    set max_unbalance 0.1
-    set nsteps_balance 5
-    set strategy $BALANCE_EXCEED_NTIMES
-    balancer TopologicalBalancer $max_unbalance $nsteps_balance $strategy
+
+    if {$max_unbalance > 0} {
+        balancer TopologicalBalancer $max_unbalance $nsteps_balance $strategy
+    }
 } else {
     # Sequential processing mode
     constraints Plain
@@ -57,14 +66,14 @@ set first_step_factor 0.001
 
 # timeSeries Triangle $tag $tStart $tEnd $period <-shift $shift> <-factor $cFactor>
 # timeSeries Triangle    5     1      10     4.0    -factor 1.0
-timeSeries Path 5 -time [list 0 1 10000] -values [list 0 1 1] 
+timeSeries Path 5 -time [list 0 1 2 10000] -values [list 0 0 1 1]  -factor 1.0
 
 pattern Plain 2 5 {
     source "foundation.loads_axial.tcl"
 }
 
 # timeSeries Path tag -time list_of_times -values list_of_values <-factor cFactor>
-timeSeries Path 10 -time [list 0 2 2.25 2.50 2.75 3 3.25 3.50 3.75 4 4.25 4.50 4.75 5] -values [list 0 0 1 0 -1 0 1 0 -1 0 1 0 -1 0 ]
+timeSeries Path 10 -time [list 0 2 2.25 2.50 2.75 3 3.25 3.50 3.75 4 4.25 4.50 4.75 5] -values [list 0 0 1 0 -1 0 1 0 -1 0 1 0 -1 0 ] -factor 2.0
 # timeSeries Triangle $tag $tStart $tEnd $period <-shift $shift> <-factor $cFactor>
 # timeSeries Triangle    10     2      10     1.0    -factor 0.5
 
@@ -75,11 +84,8 @@ pattern Plain 3 10 {
 
 
 puts "Self weight stage Nsteps=$Nsteps_grav"
-integrator LoadControl $first_step_factor 
+integrator LoadControl [expr 1./$Nsteps_grav]
 analysis Static
-analyze 1
-
-integrator LoadControl [expr (1-$first_step_factor)/$Nsteps_grav]
 set errflag [analyze $Nsteps_grav]
 
 
@@ -147,7 +153,9 @@ set Nsteps [expr int($tmax/$dT)]
 integrator LoadControl $dT
 
 for {set step 0} {$step < $Nsteps} {incr step} {
+    puts "\n\n\n"
     puts "Step $step of $Nsteps"
+    puts [nodeDisp 1]
     set errrfalg [analyze 1]
     if {$errrfalg != 0} {
         break

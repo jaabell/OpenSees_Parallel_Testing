@@ -6,13 +6,13 @@ import glob
 plt.style.use("ggplot")
 
 # dirs = ["balancer_off/",  "balancer_on/"]
-# dirs = ["balancer_on/",  "balancer_on_shm/"]
-dirs = ["balancer_on/",  "./"]
+dirs = ["balancer_on/",  "balancer_on_shm/"]
+# dirs = ["balancer_on/",  "./"]
 
 globs = ["global.updatetime.*.out", "timing_solution_*.out", "timing_assembly_*.out", "timing_repartitioning.txt"]
 titles = ["Update Time", "Solution Time", "Assembly Time", "Repartitioning Time"]
 
-ylims = [0.06, 0.20, 0.016, 0.20]
+ylims = [0.1, 0.20, 0.016, 0.20]
 
 
 for g, tit, ylim in zip(globs, titles, ylims):
@@ -31,7 +31,7 @@ for g, tit, ylim in zip(globs, titles, ylims):
             if len(data.shape) == 2:
                 t = data[:,0]
                 u = data[:,1]
-                plt.plot(u)#,label=f.replace("updatetime","").replace("..","").replace(".out",""))
+                plt.plot(t, u)#,label=f.replace("updatetime","").replace("..","").replace(".out",""))
             else:
                 u = data[:]
                 plt.plot(u)#,label=f.replace("updatetime","").replace("..","").replace(".out",""))
