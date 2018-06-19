@@ -5,8 +5,9 @@ import glob
 
 plt.style.use("ggplot")
 
-dirs = ["balancer_off/",  "balancer_on/"]
+# dirs = ["balancer_off/",  "balancer_on/"]
 # dirs = ["balancer_on/",  "balancer_on_shm/"]
+dirs = ["balancer_on/",  "./"]
 
 globs = ["global.updatetime.*.out", "timing_solution_*.out", "timing_assembly_*.out", "timing_repartitioning.txt"]
 titles = ["Update Time", "Solution Time", "Assembly Time", "Repartitioning Time"]

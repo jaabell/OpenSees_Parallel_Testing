@@ -1,5 +1,11 @@
 model BasicBuilder -ndm 3 -ndf 3
 
+set BALANCE_ALWAYS 0 
+set BALANCE_ALWAYS_NSTEPS 1
+set BALANCE_EXCEED 2
+set BALANCE_EXCEED_NTIMES 3
+set BALANCE_EXCEED_NTIMES_CONSEC 4
+
 set rank [getPID]
 set nproc [getNP]
 
@@ -27,7 +33,10 @@ if {$nproc > 1} {
     # system Mumps
     system SparseGEN
     partitioner MetisWithTopology
-    balancer TopologicalBalancer
+    set max_unbalance 0.1
+    set nsteps_balance 5
+    set strategy $BALANCE_EXCEED_NTIMES
+    balancer TopologicalBalancer $max_unbalance $nsteps_balance $strategy
 } else {
     # Sequential processing mode
     constraints Plain
@@ -39,11 +48,30 @@ if {$nproc > 1} {
 updateMaterialStage -material $mat_Soil_tag -stage 0
 
 
-test NormDispIncr 1.0e-6 25 2
+test NormDispIncr 1.0e-6 50 2
 algorithm Newton
 set Nsteps_grav 1
 
 set first_step_factor 0.001
+
+
+# timeSeries Triangle $tag $tStart $tEnd $period <-shift $shift> <-factor $cFactor>
+# timeSeries Triangle    5     1      10     4.0    -factor 1.0
+timeSeries Path 5 -time [list 0 1 10000] -values [list 0 1 1] 
+
+pattern Plain 2 5 {
+    source "foundation.loads_axial.tcl"
+}
+
+# timeSeries Path tag -time list_of_times -values list_of_values <-factor cFactor>
+timeSeries Path 10 -time [list 0 2 2.25 2.50 2.75 3 3.25 3.50 3.75 4 4.25 4.50 4.75 5] -values [list 0 0 1 0 -1 0 1 0 -1 0 1 0 -1 0 ]
+# timeSeries Triangle $tag $tStart $tEnd $period <-shift $shift> <-factor $cFactor>
+# timeSeries Triangle    10     2      10     1.0    -factor 0.5
+
+pattern Plain 3 10 {
+    source "foundation.loads_cyclic.tcl"
+}
+
 
 
 puts "Self weight stage Nsteps=$Nsteps_grav"
@@ -73,19 +101,11 @@ eval $parameterchangestring
 updateMaterialStage -material $mat_Soil_tag -stage 1
 
 
-loadConst
-setTime 0.0
+# loadConst
+# setTime 0.0
 
 
 puts "Vertical loading stage"
-
-if {$nproc == 1} {
-    # recorder pvd disp2 disp
-}
-
-pattern Plain 2 "Linear" {
-    source "foundation.loads_axial.tcl"
-}
 
 
 set Nsteps_load 50
@@ -116,15 +136,10 @@ if {$errflag != 0} {
 
 puts "Cyclic loading stage"
 
-loadConst
-setTime 0.0
+# loadConst
+# setTime 0.0
 
-# timeSeries Triangle $tag $tStart $tEnd $period <-shift $shift> <-factor $cFactor>
-timeSeries Triangle    10     0      10     1.0    -factor 0.1
 
-pattern Plain 3 10 {
-    source "foundation.loads_cyclic.tcl"
-}
 
 set dT 0.01
 set tmax 4
