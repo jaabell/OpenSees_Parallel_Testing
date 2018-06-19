@@ -3,7 +3,7 @@ set nu 0.3
 
 
 set G0        125.   ;# [Adimensional]
-set nu        0.3   ;# [Adimensional]
+set nu        0.25   ;# [Adimensional]
 set e_init    0.673  ;# [Adimensional]! Chris, este se llamaba vR
 set Mc        1.25   ;# [Adimensional]
 set c         0.712  ;# [Adimensional]  1.0  #Circular deviatoric cross section

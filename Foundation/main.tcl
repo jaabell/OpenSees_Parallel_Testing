@@ -3,7 +3,6 @@ model BasicBuilder -ndm 3 -ndf 3
 set rank [getPID]
 set nproc [getNP]
 
-
 puts "rank   =   $rank"
 puts "nproc   =   $nproc"
 
@@ -16,9 +15,8 @@ source "foundation.elements.tcl"
 
 
 # recorder gmsh output disp
+recorder gmsh global updatetime
 recorder gmsh eleoutput eleResponse updatetime
-recorder gmsh updatetime updatetime
-recorder gmsh nodeoutput disp
 
 
 
@@ -26,8 +24,10 @@ if {$nproc > 1} {
     # Parallel processing mode
     constraints Plain
     numberer Plain
-    #system Mumps
+    # system Mumps
     system SparseGEN
+    partitioner MetisWithTopology
+    balancer TopologicalBalancer
 } else {
     # Sequential processing mode
     constraints Plain
@@ -36,40 +36,42 @@ if {$nproc > 1} {
 }
 
 
-pattern Plain 1 "Linear" {
-    source "foundation.loads_gravity.tcl"
-}
+updateMaterialStage -material $mat_Soil_tag -stage 0
 
 
-test NormDispIncr 1.0e-6 25 0
+test NormDispIncr 1.0e-6 25 2
 algorithm Newton
-# algorithm Linear
-# algorithm NewtonLineSearch -type Bisection
-# algorithm ModifiedNewton
 set Nsteps_grav 1
 
 set first_step_factor 0.001
 
-partitioner MetisWithTopology
-balancer TopologicalBalancer
 
 puts "Self weight stage Nsteps=$Nsteps_grav"
 integrator LoadControl $first_step_factor 
 analysis Static
 analyze 1
 
+integrator LoadControl [expr (1-$first_step_factor)/$Nsteps_grav]
+set errflag [analyze $Nsteps_grav]
+
+
 puts "Done self weight"
 
-#exit 0
 
-
-
-integrator LoadControl [expr (1-$first_step_factor)/$Nsteps_grav]
-analyze $Nsteps_grav
-
-if {$nproc == 1} {
-remove recorder $recid
+if {$errflag != 0} {
+    puts "Self weight failed!"
+    exit 0
+} else {
+    puts "Self weight finished successfully!"
 }
+
+set nu_dynamic 0.05
+set parameterchangestring "setParameter -val $nu_dynamic -ele ${eles}  poissonRatio 1"
+puts $parameterchangestring
+eval $parameterchangestring
+
+updateMaterialStage -material $mat_Soil_tag -stage 1
+
 
 loadConst
 setTime 0.0
@@ -78,7 +80,7 @@ setTime 0.0
 puts "Vertical loading stage"
 
 if {$nproc == 1} {
-    recorder pvd disp2 disp
+    # recorder pvd disp2 disp
 }
 
 pattern Plain 2 "Linear" {
@@ -89,15 +91,53 @@ pattern Plain 2 "Linear" {
 set Nsteps_load 50
 
 integrator LoadControl $first_step_factor 
-analysis Static
-analyze 1
+set errflage [analyze 1]
+
+
+if {$errflag != 0} {
+    puts "First step vertical failed!"
+    exit 0
+}
 
 integrator LoadControl [expr (1-$first_step_factor)/$Nsteps_load]
-analyze $Nsteps_load
+
+
+set errflag [analyze $Nsteps_load]
+
+if {$errflag != 0} {
+    puts "Vertical failed!"
+    exit 0
+} else {
+    puts "Vertical finished successfully!"
+}
 
 
 
-# puts "Cyclic loading stage"
+
+puts "Cyclic loading stage"
+
+loadConst
+setTime 0.0
+
+# timeSeries Triangle $tag $tStart $tEnd $period <-shift $shift> <-factor $cFactor>
+timeSeries Triangle    10     0      10     1.0    -factor 0.1
+
+pattern Plain 3 10 {
+    source "foundation.loads_cyclic.tcl"
+}
+
+set dT 0.01
+set tmax 4
+set Nsteps [expr int($tmax/$dT)]
+integrator LoadControl $dT
+
+for {set step 0} {$step < $Nsteps} {incr step} {
+    puts "Step $step of $Nsteps"
+    set errrfalg [analyze 1]
+    if {$errrfalg != 0} {
+        break
+    }
+}
 
 # set dT 1.
 # set numStep 100

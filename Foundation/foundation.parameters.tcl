@@ -8,7 +8,7 @@ set L 2.
 set Area [expr $B*$L]
 set qx0 [expr 0*$KPa*$Area]
 set qy0 [expr 0*$KPa*$Area]
-set qz0 [expr 5*$KPa*$Area]
+set qz0 [expr 10*$KPa*$Area]
 set qx  [expr 0*$KPa*$Area]
 set qy  [expr 0*$KPa*$Area]
 set qz  [expr 3*$KPa*$Area]

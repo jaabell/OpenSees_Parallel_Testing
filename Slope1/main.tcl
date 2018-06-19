@@ -78,7 +78,7 @@ numberer    RCM
 
 
 partitioner MetisWithTopology
-balancer TopologicalBalancer
+# balancer TopologicalBalancer
 
 #Set appropriate SOE depending on whether running sequential or parallel
 set rank [getPID]
@@ -97,7 +97,7 @@ integrator  Newmark $gamma $beta
 analysis    Transient
 
 # Run gravity and print pressure at lower left corner to check for pressure convergence
-set Nsteps 2
+set Nsteps 100
 set pref [format {%0.2f} [expr 8. * 9.81 * 1] ]
 for {set i 0} {$i < $Nsteps} {incr i} {
 
@@ -107,7 +107,7 @@ for {set i 0} {$i < $Nsteps} {incr i} {
     puts "  P1 = $pv1 ($pref) "
 }
 
-
+# exit(0)
 
 
 # ================================================================================================
@@ -157,16 +157,18 @@ timeSeries   Trig   1     0.     5.    1.     -factor [expr $a0*9.81]
 pattern UniformExcitation 1 1 -accel 1
 
 
-analysis    VariableTransient
+# analysis    VariableTransient
 test        NormDispIncr 1e-7 40 0
 
 set Nsteps 2
 # set Nsteps 1
+integrator  Newmark $gamma $beta 
+analysis    Transient
 
 puts "Start transient"
 # analyze 1000 0.001
 for {set i 0} {$i < $Nsteps} {incr i} {
     puts "Step $i (t = [getTime]s)"
-    # analyze 1 0.001 
-    analyze 1 0.001 0.0001 0.01 10
+    analyze 1 0.001 
+    # analyze 1 0.001 0.0001 0.01 10
 }
