@@ -33,7 +33,7 @@ source "foundation.elements.tcl"
 recorder gmsh global updatetime
 recorder gmsh eleoutput eleResponse updatetime
 
-recorder Node -closeOnWrite -file "nodedisp.out" -time -node 1 -dof 1 2 3 disp
+# recorder Node -closeOnWrite -file "nodedisp.out" -time -node 1 -dof 1 2 3 disp
 
 if {$nproc > 1} {
     # Parallel processing mode
