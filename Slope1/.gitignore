@@ -3,3 +3,6 @@ eleoutput*
 updatetime*
 *.out
 *.out*
+output*
+balancer*
+medium*

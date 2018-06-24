@@ -3,37 +3,58 @@ import scipy as sp
 import matplotlib.pylab as plt
 import glob
 
+plt.style.use("ggplot")
 
-files = glob.glob("timing.updatetime.*.4.out")
+dirs = ["medium_balancer_on/",  "medium_balancer_on_shm/"]
+# dirs = ["medium_balancer_off/",  "medium_balancer_on/"]
+# dirs = ["balancer_off/",  "balancer_on/"]
+# dirs = ["balancer_on/",  "balancer_on_shm/"]
+# dirs = ["balancer_on/",  "./"]
 
-files.sort()
+globs = ["timing.updatetime.*.out", "timing_solution_*.out", "timing_assembly_*.out", "timing_repartitioning.txt"]
+titles = ["Update Time", "Solution Time", "Assembly Time", "Repartitioning Time"]
 
-plt.figure()
-plt.subplot(3,1,1)
+ylims = [0.025, 0.0012, 0.00012, 0.0035]
 
-do_once = True
-for f in files:
-    data = sp.loadtxt(f)
-    t = data[50:,0]
-    u = data[50:,1]
-    if do_once:
-        umax = u.copy()
-        umin = u.copy()
-        do_once = False
-    else:
-        umax = sp.maximum(u, umax)
-        umin = sp.minimum(u, umin)
-    plt.plot(t,u,label=f.replace(".updatetime.",".").replace(".out",""))
 
-unbalance = (umax - umin)/umin
-plt.legend()
+for g, tit, ylim in zip(globs, titles, ylims):
 
-plt.subplot(3,1,2)
-plt.plot(t, unbalance)
-plt.ylim([0, 1.0])
+    plt.figure().set_size_inches([12,5], forward=True)
+    i = 1
+    for d in dirs:
+        print g
 
-T = 1.0
-plt.subplot(3,1,3)
-plt.plot(t, 0.4*sp.sin(2*sp.pi/T*t)*(t<5.0))
+        files = glob.glob(d+g)
+        files.sort()
+
+        for f in files:
+            data = sp.loadtxt(f)
+            if len(data.shape) == 2:
+                t = data[:,0]
+                u = data[:,1]
+                plt.subplot(2,2,i)
+                plt.plot(t, u)#,label=f.replace("updatetime","").replace("..","").replace(".out",""))
+                cumu = sp.cumsum(u)
+                # ax=plt.gca()
+                # plt.ylim([0, ylim])
+                
+                plt.subplot(2,2,i+1)
+                # ax2 = ax.twinx()
+                plt.plot(t, cumu)
+                # plt.set_ylabel("Cumulative Time [s]")
+                # ax.set_ylabel("Update Time [s]")
+            else:
+                plt.subplot(2,2,i)
+                u = data[:]
+                plt.plot(u)#,label=f.replace("updatetime","").replace("..","").replace(".out",""))
+            # ax.set_ylim([0, ylim])
+            plt.ylabel("Time (s)")
+        i += 2
+
+
+    plt.xlabel("Analysis Pseudo-Time, [s]")
+    plt.suptitle(tit)
+    # plt.legend()
+
 
 plt.show()

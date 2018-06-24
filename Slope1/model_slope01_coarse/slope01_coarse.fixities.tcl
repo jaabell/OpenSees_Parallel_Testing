@@ -1,62 +1,52 @@
-fix 1 1 1 0
-fix 1 1 0 0
-fix 2 1 1 0
-fix 3 1 1 0
-fix 4 1 1 0
-fix 5 1 1 0
-fix 5 1 0 0
-fix 6 0 0 1
-fix 6 1 0 0
-fix 7 0 0 1
-fix 8 0 0 1
-fix 9 0 0 1
-fix 10 0 0 1
-fix 10 1 0 0
+fix 1 1 1
+fix 1 1 0
+fix 2 1 1
+fix 3 1 1
+fix 4 1 1
+fix 5 1 1
+fix 5 1 0
+fix 6 1 0
+equalDOF 7 14  1 2
+equalDOF 8 15  1 2
+equalDOF 9 16  1 2
+equalDOF 10 17  1 2
+fix 10 1 0
 fix 13 1 0
 fix 17 1 0
-fix 18 1 1 0
-fix 19 1 1 0
-fix 20 1 1 0
-fix 21 1 1 0
-fix 22 1 1 0
-fix 23 1 1 0
-fix 24 1 1 0
-fix 25 1 1 0
-fix 26 1 1 0
-fix 27 1 1 0
-fix 28 1 1 0
-fix 29 1 1 0
-fix 30 1 1 0
-fix 31 1 1 0
-fix 32 1 1 0
-fix 33 1 1 0
-fix 34 1 1 0
-fix 35 1 1 0
-fix 36 1 1 0
-fix 37 1 1 0
-fix 38 1 1 0
-fix 39 0 0 1
-fix 40 0 0 1
-fix 41 0 0 1
-fix 42 0 0 1
-fix 43 0 0 1
-fix 44 0 0 1
-fix 45 0 0 1
-fix 46 0 0 1
-fix 47 0 0 1
-fix 48 0 0 1
-fix 49 0 0 1
-fix 50 0 0 1
-fix 51 0 0 1
-fix 56 0 0 1
-fix 57 0 0 1
-fix 58 0 0 1
-fix 59 0 0 1
-fix 64 0 0 1
-fix 65 0 0 1
-fix 66 0 0 1
-fix 67 0 0 1
-fix 85 1 0 0
-fix 86 1 0 0
+fix 18 1 1
+fix 19 1 1
+fix 20 1 1
+fix 21 1 1
+fix 22 1 1
+fix 23 1 1
+fix 24 1 1
+fix 25 1 1
+fix 26 1 1
+fix 27 1 1
+fix 28 1 1
+fix 29 1 1
+fix 30 1 1
+fix 31 1 1
+fix 32 1 1
+fix 33 1 1
+fix 34 1 1
+fix 35 1 1
+fix 36 1 1
+fix 37 1 1
+fix 38 1 1
+equalDOF 48 52  1 2
+equalDOF 49 53  1 2
+equalDOF 50 54  1 2
+equalDOF 51 55  1 2
+equalDOF 56 60  1 2
+equalDOF 57 61  1 2
+equalDOF 58 62  1 2
+equalDOF 59 63  1 2
+equalDOF 64 68  1 2
+equalDOF 65 69  1 2
+equalDOF 66 70  1 2
+equalDOF 67 71  1 2
+fix 85 1 0
+fix 86 1 0
 fix 91 1 0
 fix 92 1 0

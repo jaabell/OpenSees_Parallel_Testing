@@ -45,4 +45,4 @@ set b2_wet -9.81
 
 set soil_matTag 1
 
-nDMaterial ManzariDafalias 1 $G0 $nu_static $e_init $Mc $c $lambda_c $e0 $ksi $P_atm $m $h0 $ch $nb $A0 $nd $z_max $cz $Den $intScheme $TanType $JacoType $TolF $TolR
+nDMaterial ManzariDafalias $soil_matTag $G0 $nu_static $e_init $Mc $c $lambda_c $e0 $ksi $P_atm $m $h0 $ch $nb $A0 $nd $z_max $cz $Den $intScheme $TanType $JacoType $TolF $TolR

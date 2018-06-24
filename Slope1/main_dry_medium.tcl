@@ -24,7 +24,7 @@ set BALANCE_EXCEED_NTIMES_CONSEC 4
 
 #Read case and meshsize selection from command line
 set CASE "slope01"; #[lindex $::argv 0]
-set MESHSIZE "coarse"; # [lindex $::argv 1]
+set MESHSIZE "medium"; # [lindex $::argv 1]
 set a0 0.1; #[lindex $::argv 2]
 
 
@@ -87,46 +87,51 @@ set gamma           0.5
 set beta            0.25
 # constraints Transformation
 constraints Plain
-test        NormDispIncr 1e-7 40 0
+test        NormDispIncr 1e-7 40 1
 algorithm   Newton
+algorithm   Linear
 numberer    RCM
 
-
-partitioner MetisWithTopology
-
-if {$max_unbalance > 0} {
-    balancer TopologicalBalancer $max_unbalance $nsteps_balance $strategy
-}
 
 #Set appropriate SOE depending on whether running sequential or parallel
 set rank [getPID]
 set nproc [getNP]
 if {$nproc == 1} {
     system      SparseGEN
+
     # system      UmfPack
 
 
 } else {
     # system      Mumps
+    partitioner MetisWithTopology
+
+    if {$max_unbalance > 0} {
+        balancer TopologicalBalancer $max_unbalance $nsteps_balance $strategy
+    }
     recorder gmsh timing updatetime eleupdatetime
     system      SparseGEN
 }
 # integrator  Newmark $gamma $beta
-integrator LoadControl 10 
-analysis    Static
 
 # Run gravity and print pressure at lower left corner to check for pressure convergence
 set Nsteps 100
+integrator LoadControl [expr 1./$Nsteps] 
+analysis    Static
 set pref [format {%0.2f} [expr 8. * 9.81 * 1] ]
 for {set i 0} {$i < $Nsteps} {incr i} {
 
-    set errflag [analyze     1] 1e1]
+    set errflag [analyze     1];# 1e1]
     # set p1 [format {%0.2f} [nodeDisp 1 3] ]
     # set pv1 [format {%0.2f} [nodeVel 1 3] ]
-    puts "  P1 = $pv1 ($pref) "
+    # puts "  P1 = $pv1 ($pref) "
+    if {$errflag < 0} {
+        puts "Failed on static!"
+        exit 0 
+    }
 }
 
-# exit(0)
+# exit 0 
 
 
 # ================================================================================================
@@ -144,7 +149,7 @@ proc listFromFile {filename} {
     close $f
     return $data
 }
-set wetnodes [listFromFile "${INDIRNAME}/wetnodes.txt"]
+# set wetnodes [listFromFile "${INDIRNAME}/wetnodes.txt"]
 
 
 
@@ -163,8 +168,8 @@ set recstring "recorder Element -ele  ${eles} -time -file ${OUTDIRNAME}/stress.o
 eval $recstring
 set recstring "recorder Element -ele  ${eles} -time -file ${OUTDIRNAME}/strain.out  strain"
 eval $recstring
-set recstring "recorder Node -node  ${wetnodes} -time -file ${OUTDIRNAME}/pressure_all.out -dof 3 vel"
-eval $recstring
+# set recstring "recorder Node -node  ${wetnodes} -time -file ${OUTDIRNAME}/pressure_all.out -dof 3 vel"
+# eval $recstring
 set recstring "recorder Node -node  ${nods} -time -file ${OUTDIRNAME}/disp.out -dof 1 2 disp"
 eval $recstring
 
@@ -176,11 +181,20 @@ timeSeries   Trig   1     0.     5.    1.     -factor [expr $a0*9.81]
 pattern UniformExcitation 1 1 -accel 1
 
 
-# analysis    VariableTransient
-test        NormDispIncr 1e-7 40 0
 
-set Nsteps 2
+wipeAnalysis
+
+constraints Plain
+test        NormDispIncr 1e-7 40 0
+algorithm   Newton
+numberer    RCM
+
+# analysis    VariableTransient
+# test        NormDispIncr 1e-7 40 0
+
+set Nsteps 5000
 # set Nsteps 1
+system      SparseGEN
 integrator  Newmark $gamma $beta 
 analysis    Transient
 
