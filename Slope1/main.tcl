@@ -1,3 +1,18 @@
+set max_unbalance [lindex $::argv 0] 
+set nsteps_balance [lindex $::argv 1] 
+set strategy [lindex $::argv 2] 
+
+
+puts "max_unbalance = $max_unbalance"
+puts "nsteps_balance = $nsteps_balance"
+puts "strategy = $strategy"
+
+set BALANCE_ALWAYS 0 
+set BALANCE_ALWAYS_NSTEPS 1
+set BALANCE_EXCEED 2
+set BALANCE_EXCEED_NTIMES 3
+set BALANCE_EXCEED_NTIMES_CONSEC 4
+
 
 # #Check inputs
 # set Ninputs [llength $::argv]
@@ -40,12 +55,12 @@ source "materials.tcl"
 source "./${INDIRNAME}/${CASE}_${MESHSIZE}.drynodes.tcl"
 source "./${INDIRNAME}/${CASE}_${MESHSIZE}.dryelements.tcl"
 
-model BasicBuilder -ndm 2 -ndf 3
+# model BasicBuilder -ndm 2 -ndf 3
 
-source "./${INDIRNAME}/${CASE}_${MESHSIZE}.wetnodes.tcl"
-source "./${INDIRNAME}/${CASE}_${MESHSIZE}.wetelements.tcl"
+# source "./${INDIRNAME}/${CASE}_${MESHSIZE}.wetnodes.tcl"
+# source "./${INDIRNAME}/${CASE}_${MESHSIZE}.wetelements.tcl"
 source "./${INDIRNAME}/${CASE}_${MESHSIZE}.fixities.tcl"
-source "./${INDIRNAME}/${CASE}_${MESHSIZE}.phreaticnodes.tcl"
+# source "./${INDIRNAME}/${CASE}_${MESHSIZE}.phreaticnodes.tcl"
 
 
 set eles [getEleTags]
@@ -78,7 +93,10 @@ numberer    RCM
 
 
 partitioner MetisWithTopology
-# balancer TopologicalBalancer
+
+if {$max_unbalance > 0} {
+    balancer TopologicalBalancer $max_unbalance $nsteps_balance $strategy
+}
 
 #Set appropriate SOE depending on whether running sequential or parallel
 set rank [getPID]
@@ -93,17 +111,18 @@ if {$nproc == 1} {
     recorder gmsh timing updatetime eleupdatetime
     system      SparseGEN
 }
-integrator  Newmark $gamma $beta 
-analysis    Transient
+# integrator  Newmark $gamma $beta
+integrator LoadControl 10 
+analysis    Static
 
 # Run gravity and print pressure at lower left corner to check for pressure convergence
 set Nsteps 100
 set pref [format {%0.2f} [expr 8. * 9.81 * 1] ]
 for {set i 0} {$i < $Nsteps} {incr i} {
 
-    set errflag [analyze     1 1e1]
-    set p1 [format {%0.2f} [nodeDisp 1 3] ]
-    set pv1 [format {%0.2f} [nodeVel 1 3] ]
+    set errflag [analyze     1] 1e1]
+    # set p1 [format {%0.2f} [nodeDisp 1 3] ]
+    # set pv1 [format {%0.2f} [nodeVel 1 3] ]
     puts "  P1 = $pv1 ($pref) "
 }
 
