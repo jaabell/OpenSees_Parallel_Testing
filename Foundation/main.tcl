@@ -1,10 +1,12 @@
 model BasicBuilder -ndm 3 -ndf 3
 
-set max_unbalance [lindex $::argv 0] 
-set nsteps_balance [lindex $::argv 1] 
-set strategy [lindex $::argv 2] 
+set MESHSIZE [lindex $::argv 0] 
+set max_unbalance [lindex $::argv 1] 
+set nsteps_balance [lindex $::argv 2] 
+set strategy [lindex $::argv 3] 
 
 
+puts "MESHSIZE = $MESHSIZE"
 puts "max_unbalance = $max_unbalance"
 puts "nsteps_balance = $nsteps_balance"
 puts "strategy = $strategy"
@@ -21,17 +23,24 @@ set nproc [getNP]
 puts "rank   =   $rank"
 puts "nproc   =   $nproc"
 
+puts "Reading units.tcl"
 source "units.tcl"
-source "foundation.parameters.tcl"
-source "foundation.nodes.tcl"
-source "foundation.fixities.tcl"
-source "foundation.materials.tcl"
-source "foundation.elements.tcl"
+puts "Reading parameters.tcl"
+source "parameters.tcl"
+puts "Reading materials.tcl"
+source "materials.tcl"
+
+puts "Reading ./model_foundation_${MESHSIZE}/foundation_${MESHSIZE}.nodes.tcl"
+source "./model_foundation_${MESHSIZE}/foundation_${MESHSIZE}.nodes.tcl"
+puts "Reading ./model_foundation_${MESHSIZE}/foundation_${MESHSIZE}.fixities.tcl"
+source "./model_foundation_${MESHSIZE}/foundation_${MESHSIZE}.fixities.tcl"
+puts "Reading ./model_foundation_${MESHSIZE}/foundation_${MESHSIZE}.elements.tcl"
+source "./model_foundation_${MESHSIZE}/foundation_${MESHSIZE}.elements.tcl"
 
 
 # recorder gmsh output disp
-recorder gmsh global updatetime
-recorder gmsh eleoutput eleResponse updatetime
+recorder gmsh timing updatetime
+# recorder gmsh eleoutput eleResponse updatetime
 
 # recorder Node -closeOnWrite -file "nodedisp.out" -time -node 1 -dof 1 2 3 disp
 
@@ -39,8 +48,8 @@ if {$nproc > 1} {
     # Parallel processing mode
     constraints Plain
     numberer Plain
-    # system Mumps
-    system SparseGEN
+    #system Mumps
+    system SparseGEN -npRow 1 -npCol $nproc
     partitioner MetisWithTopology
 
     if {$max_unbalance > 0} {
@@ -69,7 +78,7 @@ set first_step_factor 0.001
 timeSeries Path 5 -time [list 0 1 2 10000] -values [list 0 0 1 1]  -factor 1.0
 
 pattern Plain 2 5 {
-    source "foundation.loads_axial.tcl"
+    source "./model_foundation_${MESHSIZE}/foundation_${MESHSIZE}.loads_axial.tcl"
 }
 
 # timeSeries Path tag -time list_of_times -values list_of_values <-factor cFactor>
@@ -78,7 +87,7 @@ timeSeries Path 10 -time [list 0 2 2.25 2.50 2.75 3 3.25 3.50 3.75 4 4.25 4.50 4
 # timeSeries Triangle    10     2      10     1.0    -factor 0.5
 
 pattern Plain 3 10 {
-    source "foundation.loads_cyclic.tcl"
+    source "./model_foundation_${MESHSIZE}/foundation_${MESHSIZE}.loads_cyclic.tcl"
 }
 
 
@@ -101,7 +110,7 @@ if {$errflag != 0} {
 
 set nu_dynamic 0.05
 set parameterchangestring "setParameter -val $nu_dynamic -ele ${eles}  poissonRatio 1"
-puts $parameterchangestring
+# puts $parameterchangestring
 eval $parameterchangestring
 
 updateMaterialStage -material $mat_Soil_tag -stage 1
@@ -148,7 +157,7 @@ puts "Cyclic loading stage"
 
 
 set dT 0.01
-set tmax 4
+set tmax 2
 set Nsteps [expr int($tmax/$dT)]
 integrator LoadControl $dT
 

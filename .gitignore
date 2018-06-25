@@ -3,3 +3,8 @@ sftp-config.json
 *.log
 log
 *log
+*.msh
+*systemtiming.txt
+out_*
+model_*
+meshes*

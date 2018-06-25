@@ -1,17 +1,34 @@
 from gmshtranslator import gmshTranslator
 
-mshfname = "foundation.msh"
+import sys
 
-gt = gmshTranslator(mshfname)
+if len(sys.argv) != 3 :
+    print "Usage: gmsh2ops.py [case] [meshsize] "
+    exit(-1)
+else:
+    case = sys.argv[1] 
+    meshsize = sys.argv[2] 
+
+mshfname = case+"_"+meshsize+".msh"
+outdir = "./model_" + case + "_" + meshsize + "/"
 
 
-fid_nodes =    open(mshfname.replace(".msh", ".nodes.tcl"),"w")
-fid_elements = open(mshfname.replace(".msh", ".elements.tcl"),"w")
-fid_fixities = open(mshfname.replace(".msh", ".fixities.tcl"),"w")
+readmshfile = "./meshes/" + mshfname
 
-fid_loads_gravity = open(mshfname.replace(".msh", ".loads_gravity.tcl"),"w")
-fid_loads_axial = open(mshfname.replace(".msh", ".loads_axial.tcl"),"w")
-fid_loads_cyclic = open(mshfname.replace(".msh", ".loads_cyclic.tcl"),"w")
+print "gmsh2ops.py - Reading: " + readmshfile
+print "gmsh2ops.py - Output : " + outdir
+
+
+gt = gmshTranslator(readmshfile)
+
+
+fid_nodes =    open(outdir+mshfname.replace(".msh", ".nodes.tcl"),"w")
+fid_elements = open(outdir+mshfname.replace(".msh", ".elements.tcl"),"w")
+fid_fixities = open(outdir+mshfname.replace(".msh", ".fixities.tcl"),"w")
+
+fid_loads_gravity = open(outdir+mshfname.replace(".msh", ".loads_gravity.tcl"),"w")
+fid_loads_axial = open(outdir+mshfname.replace(".msh", ".loads_axial.tcl"),"w")
+fid_loads_cyclic = open(outdir+mshfname.replace(".msh", ".loads_cyclic.tcl"),"w")
 
 apply_gravity_to_these_elements = []
 apply_surfaceLoad_to_these_elements = []
@@ -119,6 +136,10 @@ for tag in apply_surfaceLoad_to_these_elements:
 
 fid_loads_gravity.write("""
 eleLoad -ele {} -type -surfaceLoad
+""".format(eles))
+
+fid_elements.write("""
+set eles [list {}]
 """.format(eles))
 
 

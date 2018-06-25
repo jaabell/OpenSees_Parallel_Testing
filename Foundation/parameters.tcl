@@ -19,5 +19,5 @@ set b3_Soil [expr -$rho_Soil * $gz]
 set b1_Footing [expr -$rho_Footing * $gx]
 set b2_Footing [expr -$rho_Footing * $gy]
 set b3_Footing [expr -$rho_Footing * $gz]
-# set BRICKTYPE stdBrick
-set BRICKTYPE SSPBrick
+set BRICKTYPE stdBrick
+# set BRICKTYPE SSPBrick

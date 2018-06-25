@@ -2,11 +2,14 @@
 SetFactory("OpenCASCADE");
 
 
-factor = 3;
+
+factor = 3*(h^(1/3));
+
+
 
 dx = 0.2*factor;
-N1 = 20/factor;
-N2 = 10/factor;
+N1 = Ceil(20/factor);
+N2 = Ceil(10/factor);
 
 LX1 = N1*dx;
 LY1 = N1*dx;
