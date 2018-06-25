@@ -35,7 +35,7 @@ set meshsize $MESHSIZE
 
 set shelltype 0
 set elastictower 0
-set a0 0.8
+set PGA 0.8
 
 # if {[llength $::argv] != 4} {
 #     puts "Usage: $::argv0 meshsize shelltype elastictower a0"
@@ -52,7 +52,7 @@ set DIRNAME "model_turbine_${meshsize}/"
 #Import model components
 puts "Importing model..."
 source "model_parameters.tcl"
-
+#                          0         1         2         3          4          5
 set shellnames  [list ShellMITC4 ShellDKGQ ShellDKGT ShellNLDKGQ ShellNLDKGT ShellNL]
 set shellnnodes [list     4          4         3          4           3         9]
 
@@ -85,9 +85,23 @@ if {$elastictower} {
 source "${DIRNAME}/turbine_beams.tcl"
 source "${DIRNAME}/turbine_pointmasses.tcl"
 
+set f 1.643466451513109  ;# hit the resonant frequency
+set Period [expr 1/$f]    ;# hit the resonant frequency
+set NPeriods 3           ;# how many periods to do
+set tEnd [expr $NPeriods*$Period]
+
+puts "Loading info"
+puts "========================================"
+puts "f=$f"
+puts "Period=$Period"
+puts "NPeriods=$NPeriods"
+puts "tEnd=$tEnd"
+puts "PGA=$PGA"
+
+
 # timeSeries Trig $tag $tStart $tEnd $period <-factor $cFactor> <-shift $shift>
-timeSeries   Trig   1     0.     3.    1.     -factor [expr $a0*9.81]
-pattern UniformExcitation 1 1 -accel 1
+timeSeries   Trig   1     0.     $tEnd    $Period     -factor 1
+pattern UniformExcitation 1 1 -accel 1 -factor [expr $PGA*9.81]
 
 set pi 3.14159
 set w1 [expr 2*$pi*0.3]
@@ -96,6 +110,14 @@ set w2 [expr 2*$pi*4]
 set zeta 0.025;     # percentage of critical damping
 set a0 [expr $zeta*2.0*$w1*$w2/($w1 + $w2)];    # mass damping coefficient based on first and second modes
 set a1 [expr $zeta*2.0/($w1 + $w2)];            # stiffness damping coefficient based on first and second modesSee Zareian & Medina 2010.
+
+puts "Rayleigh info"
+puts "========================================"
+puts "w1=$w1"
+puts "w2=$w2"
+puts "zeta=$zeta"
+puts "a0=$a0"
+puts "a1=$a1"
 
 rayleigh $a0 $a1 0. 0.  
 
@@ -109,7 +131,6 @@ recorder Node -file "accel_nacelle.out" -time -node $NacelleNode -dof 1 2 3 4 5 
 
 # print
 
-# Displacement_XX*iHat+Displacement_YY*jHat+Displacement_ZZ*kHat
 
 set rank [getPID]
 set nproc [getNP]
@@ -118,7 +139,12 @@ if {$nproc > 1} {
     recorder gmsh timing updatetime eleupdatetime
     # recorder gmsh disp disp
 } else {
+    # Displacement_XX*iHat+Displacement_YY*jHat+Displacement_ZZ*kHat
     recorder pvd disp disp
+    # sqrt(UnknownMovableObjectstresses_0^2+UnknownMovableObjectstresses_1^2+UnknownMovableObjectstresses_2^2)
+    recorder pvd stresses eleResponse stresses
+    # sqrt(UnknownMovableObjectstresses_0^2+UnknownMovableObjectstresses_1^2+UnknownMovableObjectstresses_2^2)
+    recorder pvd strains eleResponse strains
 }
 
 #Setup analysis
@@ -146,7 +172,38 @@ if {$nproc > 1} {
 }
 
 
+if {$nproc == 1} {
+    #Perform eigen analysis
+    puts "\n---> Eigenanalysis"
+    set eigvals [eigen  $Nmodes]
+
+    #Postproc eigenvalues
+    set w_vec [list]
+    set f_vec [list]
+    set T_vec [list]
+
+    set fid [open "eigenfrequencies.txt" w]
+
+    set pi 3.14159
+    set mode 1
+    foreach w2 $eigvals {
+        set w [expr sqrt($w2)]
+        set f [expr $w/2/$pi]
+        set T [expr 1/$f]
+        puts "Mode $mode"
+        # puts "   w = $w"
+        puts "   f = $f"
+        # puts "   T = $T"
+        incr mode
+
+        #Write to file
+        puts $fid "$f"
+    }
+}
+
 set NSTEPS 600
+
+# exit
 
 puts "Start transient..."
 # analyze 1000 0.01
