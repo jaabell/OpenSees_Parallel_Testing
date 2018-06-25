@@ -90,7 +90,7 @@ set beta            0.25
 constraints Plain
 test        NormDispIncr 1e-7 40 2
 algorithm   Newton
-algorithm   Linear
+# algorithm   Linear
 numberer    RCM
 
 
