@@ -3,8 +3,8 @@
 case="slope01"
 
 gmsh -setnumber h 4 -2 ${case}.geo -o  "./meshes/"${case}_coarse.msh
-gmsh -setnumber h 1 -2 ${case}.geo -o  "./meshes/"${case}_medium.msh
-gmsh -setnumber h 0.2 -2 ${case}.geo -o  "./meshes/"${case}_fine.msh
+gmsh -setnumber h 1.26491 -2 ${case}.geo -o  "./meshes/"${case}_medium.msh
+gmsh -setnumber h 0.40000 -2 ${case}.geo -o  "./meshes/"${case}_fine.msh
 
 rm -rf "./model_${case}_coarse"
 rm -rf "./model_${case}_medium"

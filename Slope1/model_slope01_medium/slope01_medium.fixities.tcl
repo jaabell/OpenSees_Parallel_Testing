@@ -89,103 +89,67 @@ fix 90 1 1
 fix 91 1 1
 fix 92 1 1
 fix 93 1 1
-fix 94 1 1
-fix 95 1 1
-fix 96 1 1
-fix 97 1 1
-fix 98 1 1
-fix 99 1 1
-fix 100 1 1
-fix 101 1 1
-fix 102 1 1
-fix 103 1 1
-fix 104 1 1
-fix 105 1 1
-fix 106 1 1
-fix 107 1 1
-fix 108 1 1
-fix 109 1 1
-fix 110 1 1
-fix 111 1 1
-fix 112 1 1
-fix 113 1 1
-equalDOF 153 172  1 2
-equalDOF 154 173  1 2
-equalDOF 155 174  1 2
-equalDOF 156 175  1 2
-equalDOF 157 176  1 2
-equalDOF 158 177  1 2
-equalDOF 159 178  1 2
-equalDOF 160 179  1 2
-equalDOF 161 180  1 2
-equalDOF 162 181  1 2
-equalDOF 163 182  1 2
-equalDOF 164 183  1 2
-equalDOF 165 184  1 2
-equalDOF 166 185  1 2
-equalDOF 167 186  1 2
-equalDOF 168 187  1 2
-equalDOF 169 188  1 2
-equalDOF 170 189  1 2
-equalDOF 171 190  1 2
-equalDOF 191 210  1 2
-equalDOF 192 211  1 2
-equalDOF 193 212  1 2
-equalDOF 194 213  1 2
-equalDOF 195 214  1 2
-equalDOF 196 215  1 2
-equalDOF 197 216  1 2
-equalDOF 198 217  1 2
-equalDOF 199 218  1 2
-equalDOF 200 219  1 2
-equalDOF 201 220  1 2
-equalDOF 202 221  1 2
-equalDOF 203 222  1 2
-equalDOF 204 223  1 2
-equalDOF 205 224  1 2
-equalDOF 206 225  1 2
-equalDOF 207 226  1 2
-equalDOF 208 227  1 2
-equalDOF 209 228  1 2
-equalDOF 229 248  1 2
-equalDOF 230 249  1 2
-equalDOF 231 250  1 2
-equalDOF 232 251  1 2
-equalDOF 233 252  1 2
-equalDOF 234 253  1 2
-equalDOF 235 254  1 2
-equalDOF 236 255  1 2
-equalDOF 237 256  1 2
-equalDOF 238 257  1 2
-equalDOF 239 258  1 2
-equalDOF 240 259  1 2
-equalDOF 241 260  1 2
-equalDOF 242 261  1 2
-equalDOF 243 262  1 2
-equalDOF 244 263  1 2
-equalDOF 245 264  1 2
-equalDOF 246 265  1 2
-equalDOF 247 266  1 2
-fix 325 1 0
-fix 326 1 0
-fix 327 1 0
-fix 328 1 0
-fix 329 1 0
-fix 330 1 0
-fix 331 1 0
-fix 332 1 0
-fix 333 1 0
-fix 334 1 0
-fix 335 1 0
-fix 336 1 0
-fix 337 1 0
-fix 338 1 0
-fix 357 1 0
-fix 358 1 0
-fix 359 1 0
-fix 360 1 0
-fix 361 1 0
-fix 362 1 0
-fix 363 1 0
-fix 364 1 0
-fix 365 1 0
+equalDOF 125 140  1 2
+equalDOF 126 141  1 2
+equalDOF 127 142  1 2
+equalDOF 128 143  1 2
+equalDOF 129 144  1 2
+equalDOF 130 145  1 2
+equalDOF 131 146  1 2
+equalDOF 132 147  1 2
+equalDOF 133 148  1 2
+equalDOF 134 149  1 2
+equalDOF 135 150  1 2
+equalDOF 136 151  1 2
+equalDOF 137 152  1 2
+equalDOF 138 153  1 2
+equalDOF 139 154  1 2
+equalDOF 155 170  1 2
+equalDOF 156 171  1 2
+equalDOF 157 172  1 2
+equalDOF 158 173  1 2
+equalDOF 159 174  1 2
+equalDOF 160 175  1 2
+equalDOF 161 176  1 2
+equalDOF 162 177  1 2
+equalDOF 163 178  1 2
+equalDOF 164 179  1 2
+equalDOF 165 180  1 2
+equalDOF 166 181  1 2
+equalDOF 167 182  1 2
+equalDOF 168 183  1 2
+equalDOF 169 184  1 2
+equalDOF 185 200  1 2
+equalDOF 186 201  1 2
+equalDOF 187 202  1 2
+equalDOF 188 203  1 2
+equalDOF 189 204  1 2
+equalDOF 190 205  1 2
+equalDOF 191 206  1 2
+equalDOF 192 207  1 2
+equalDOF 193 208  1 2
+equalDOF 194 209  1 2
+equalDOF 195 210  1 2
+equalDOF 196 211  1 2
+equalDOF 197 212  1 2
+equalDOF 198 213  1 2
+equalDOF 199 214  1 2
+fix 261 1 0
+fix 262 1 0
+fix 263 1 0
+fix 264 1 0
+fix 265 1 0
+fix 266 1 0
+fix 267 1 0
+fix 268 1 0
+fix 269 1 0
+fix 270 1 0
+fix 271 1 0
+fix 272 1 0
+fix 287 1 0
+fix 288 1 0
+fix 289 1 0
+fix 290 1 0
+fix 291 1 0
+fix 292 1 0
+fix 293 1 0
