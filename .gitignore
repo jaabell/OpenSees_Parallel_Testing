@@ -8,3 +8,8 @@ log
 out_*
 model_*
 meshes*
+*.out*
+*.out
+timing*
+*pvd
+*vtu
