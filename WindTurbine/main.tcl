@@ -29,23 +29,9 @@ model BasicBuilder -ndm 3 -ndf 6
 
 set meshsize $MESHSIZE
 
-# set meshsize obese
-# set meshsize medium
-# set meshsize fine
-
 set shelltype 0
-set elastictower 0
+set elastictower 1
 set PGA 1.5
-
-# if {[llength $::argv] != 4} {
-#     puts "Usage: $::argv0 meshsize shelltype elastictower a0"
-#     exit 0
-# }
-
-# set meshsize [lindex $::argv 0]
-# set shelltype [lindex $::argv 1]
-# set elastictower [lindex $::argv 2]
-# set a0 [lindex $::argv 3]
 
 set DIRNAME "model_turbine_${meshsize}/"
 
@@ -162,7 +148,8 @@ numberer Plain
 
 
 if {$nproc > 1} {
-    system SparseGEN -npRow 1 -npCol $nproc
+    # system SparseGEN -npRow 1 -npCol $nproc
+    system SparseGEN -npRow 2 -npCol 2
 } else {
     system UmfPack
 }
@@ -216,9 +203,13 @@ if {$nproc == 1} {
     }
 }
 
-set nincr 20
-set NSTEPS [expr 600/$nincr]
-
+if {$nproc > 1} {
+    set nincr 20
+    set NSTEPS [expr 200/$nincr]
+} else {
+    set nincr 20
+    set NSTEPS [expr 600/$nincr]
+}
 # 24.52500
 # exit
 

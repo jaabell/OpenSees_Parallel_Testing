@@ -6,7 +6,7 @@ d = sp.loadtxt("disp_nacelle.out")
 v = sp.loadtxt("velo_nacelle.out")
 a = sp.loadtxt("accel_nacelle.out")
 
-factor = 1
+factor = 1.
 
 d[:,1:] *= factor
 a[:,1:] *= factor

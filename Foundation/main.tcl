@@ -39,10 +39,11 @@ source "./model_foundation_${MESHSIZE}/foundation_${MESHSIZE}.elements.tcl"
 
 
 # recorder gmsh output disp
-recorder gmsh timing updatetime
+recorder gmsh timing updatetime eleupdatetime
+# recorder gmsh timing updatetime 
 # recorder gmsh eleoutput eleResponse updatetime
 
-# recorder Node -closeOnWrite -file "nodedisp.out" -time -node 1 -dof 1 2 3 disp
+recorder Node -file "nodedisp.out" -time -node 1 2 3 4 -dof 1 2 3 disp
 
 if {$nproc > 1} {
     # Parallel processing mode
@@ -56,6 +57,7 @@ if {$nproc > 1} {
         balancer TopologicalBalancer $max_unbalance $nsteps_balance $strategy
     }
 } else {
+    recorder pvd disp disp
     # Sequential processing mode
     constraints Plain
     numberer RCM

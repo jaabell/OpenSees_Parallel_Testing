@@ -31,14 +31,17 @@ mkdir $dir3
 #Run basic case with no rebalancing UNBAL set to 0
 /usr/bin/time -o "${dir1}_systemtiming.txt" mpirun -np $NP pops main.tcl $MESHSIZE 0 $NSTEPS $STRATEGY
 mv timing* $dir1
+mv nodedisp*out $dir1
 
 #Run case with rebalancing but without SHM optimization
 /usr/bin/time -o "${dir2}_systemtiming.txt" mpirun -np $NP pops main.tcl $MESHSIZE $UNBAL $NSTEPS $STRATEGY
 mv timing* $dir2
+mv nodedisp*out $dir2
 
 #Run case with rebalancing and SHM optimization
 export OPENSEES_USE_SHM=True
 /usr/bin/time -o "${dir3}_systemtiming.txt" mpirun -np $NP pops main.tcl $MESHSIZE $UNBAL $NSTEPS $STRATEGY
 mv timing* $dir3
+mv nodedisp*out $dir3
 
 unset OPENSEES_USE_SHM
