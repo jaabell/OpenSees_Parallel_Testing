@@ -6,12 +6,18 @@ d = sp.loadtxt("disp_nacelle.out")
 v = sp.loadtxt("velo_nacelle.out")
 a = sp.loadtxt("accel_nacelle.out")
 
+factor = 1
+
+d[:,1:] *= factor
+a[:,1:] *= factor
+v[:,1:] *= factor
+
 dr = sp.loadtxt("./reference_solution/disp_nacelle.out")
 vr = sp.loadtxt("./reference_solution/velo_nacelle.out")
 ar = sp.loadtxt("./reference_solution/accel_nacelle.out")
 
-a0 = 0.8*9.81*sp.sin(2*sp.pi*d[:,0])*0
-a0r = 0.8*9.81*sp.sin(2*sp.pi*dr[:,0])*0
+a0 = 0.8*9.81*sp.sin(2*sp.pi*a[:,0])*0
+a0r = 0.8*9.81*sp.sin(2*sp.pi*ar[:,0])*0
 
 plt.figure()
 plt.subplot(3,1,1)

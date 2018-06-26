@@ -35,7 +35,7 @@ set meshsize $MESHSIZE
 
 set shelltype 0
 set elastictower 0
-set PGA 0.8
+set PGA 1.5
 
 # if {[llength $::argv] != 4} {
 #     puts "Usage: $::argv0 meshsize shelltype elastictower a0"
@@ -85,7 +85,7 @@ if {$elastictower} {
 source "${DIRNAME}/turbine_beams.tcl"
 source "${DIRNAME}/turbine_pointmasses.tcl"
 
-set f 1.643466451513109  ;# hit the resonant frequency
+set f 1.6778170479140695  ;# hit the resonant frequency  Period = 0.59601   peaks at t = 0.14900,  0.44701, 0.74501, 1.04302, 1.34102, 1.63903  (end at T= 1.78803)
 set Period [expr 1/$f]    ;# hit the resonant frequency
 set NPeriods 3           ;# how many periods to do
 set tEnd [expr $NPeriods*$Period]
@@ -100,8 +100,10 @@ puts "PGA=$PGA"
 
 
 # timeSeries Trig $tag $tStart $tEnd $period <-factor $cFactor> <-shift $shift>
-timeSeries   Trig   1     0.     $tEnd    $Period     -factor 1
-pattern UniformExcitation 1 1 -accel 1 -factor [expr $PGA*9.81]
+# timeSeries   Trig   1     0.     $tEnd    $Period     -factor 1
+timeSeries Path 1 -dt 0.001 -filePath "acc2.txt" 
+pattern UniformExcitation 1 1 -accel 1 
+
 
 set pi 3.14159
 set w1 [expr 2*$pi*0.3]
@@ -135,6 +137,8 @@ recorder Node -file "accel_nacelle.out" -time -node $NacelleNode -dof 1 2 3 4 5 
 set rank [getPID]
 set nproc [getNP]
 
+# 2.50000
+
 if {$nproc > 1} {
     recorder gmsh timing updatetime eleupdatetime
     # recorder gmsh disp disp
@@ -142,9 +146,11 @@ if {$nproc > 1} {
     # Displacement_XX*iHat+Displacement_YY*jHat+Displacement_ZZ*kHat
     recorder pvd disp disp
     # sqrt(UnknownMovableObjectstresses_0^2+UnknownMovableObjectstresses_1^2+UnknownMovableObjectstresses_2^2)
-    recorder pvd stresses eleResponse stresses
+    # sqrt(UnknownMovableObjectmaterial1fiber1stresses_0^2+UnknownMovableObjectmaterial1fiber1stresses_1^2+UnknownMovableObjectmaterial1fiber1stresses_2^2)
+    # sqrt(UnknownMovableObjectmaterial1fiber1stresses_0^2+UnknownMovableObjectmaterial1fiber1stresses_1^2+UnknownMovableObjectmaterial1fiber1stresses_2^2)
+    recorder pvd stresses eleResponse material 1 fiber 1 stresses
     # sqrt(UnknownMovableObjectstresses_0^2+UnknownMovableObjectstresses_1^2+UnknownMovableObjectstresses_2^2)
-    recorder pvd strains eleResponse strains
+    recorder pvd strains eleResponse material 1 fiber 1 strains
 }
 
 #Setup analysis
@@ -160,10 +166,19 @@ if {$nproc > 1} {
 } else {
     system UmfPack
 }
-test NormDispIncr  1e-6 10 0
-algorithm Newton
+test NormDispIncr  1e-6 200 2
+algorithm Newton 
+# algorithm ModifiedNewton 
+# algorithm SecantNewton 
+# algorithm NewtonLineSearch -type Bisection
+# algorithm NewtonLineSearch 
+# algorithm BFGS
+# algorithm Broyden 5
+
+# algorithm NewtonLineSearch -type Bisection
 integrator Newmark 0.5 0.25
 analysis Transient
+# analysis VariableTransient
 if {$nproc > 1} {
     partitioner MetisWithTopology
     if {$max_unbalance > 0} {
@@ -201,13 +216,20 @@ if {$nproc == 1} {
     }
 }
 
-set NSTEPS 600
+set nincr 20
+set NSTEPS [expr 600/$nincr]
 
+# 24.52500
 # exit
 
 puts "Start transient..."
 # analyze 1000 0.01
 for {set i 0} {$i < $NSTEPS} {incr i} {
-    puts "Step $i"
-    analyze 1 0.01
+    puts "Step $i t = [getTime]"
+    # set err [analyze $nincr 0.01 0.0001 0.02 6]
+    set err [analyze $nincr 0.01]
+    if {$err != 0} {
+        puts "....failure"
+        exit 0
+    }
 }
