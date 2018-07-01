@@ -1,5 +1,10 @@
 model BasicBuilder -ndm 3 -ndf 3
 
+ set startT [clock seconds]
+
+
+# set totalComputeTime "20.00000"
+
 set MESHSIZE [lindex $::argv 0] 
 set max_unbalance [lindex $::argv 1] 
 set nsteps_balance [lindex $::argv 2] 
@@ -51,7 +56,7 @@ if {$nproc > 1} {
     numberer Plain
     #system Mumps
     system SparseGEN -npRow 1 -npCol $nproc
-    partitioner MetisWithTopology
+    partitioner TwoLevelMetisWithTopology
 
     if {$max_unbalance > 0} {
         balancer TopologicalBalancer $max_unbalance $nsteps_balance $strategy
@@ -172,6 +177,20 @@ for {set step 0} {$step < $Nsteps} {incr step} {
         break
     }
 }
+
+
+set endT [clock seconds]
+set ElapsedTime [expr $endT-$startT]
+set ElapsedHours [expr int($ElapsedTime/3600.)]
+set ElapsedMins [expr int($ElapsedTime/60.-$ElapsedHours*60.)]
+set ElapsedSecs [expr int($ElapsedTime-$ElapsedHours*3600-$ElapsedMins*60.)]
+
+
+set fid [open "totaltime.txt" w]
+
+puts $fid "Execution time: $ElapsedHours hours and $ElapsedMins minutes and $ElapsedSecs seconds."
+
+close $fid
 
 # set dT 1.
 # set numStep 100
