@@ -9,12 +9,14 @@ set MESHSIZE [lindex $::argv 0]
 set max_unbalance [lindex $::argv 1] 
 set nsteps_balance [lindex $::argv 2] 
 set strategy [lindex $::argv 3] 
+set partlevel [lindex $::argv 4] 
 
 
 puts "MESHSIZE = $MESHSIZE"
 puts "max_unbalance = $max_unbalance"
 puts "nsteps_balance = $nsteps_balance"
 puts "strategy = $strategy"
+puts "partlevel = $partlevel"
 
 set BALANCE_ALWAYS 0 
 set BALANCE_ALWAYS_NSTEPS 1
@@ -56,7 +58,12 @@ if {$nproc > 1} {
     numberer Plain
     #system Mumps
     system SparseGEN -npRow 1 -npCol $nproc
-    partitioner TwoLevelMetisWithTopology
+
+    if {$partlevel == 1} {
+        partitioner MetisWithTopology
+    } elseif {$partlevel == 2} {
+        partitioner TwoLevelMetisWithTopology
+    } 
 
     if {$max_unbalance > 0} {
         balancer TopologicalBalancer $max_unbalance $nsteps_balance $strategy
