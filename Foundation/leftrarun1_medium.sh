@@ -1,8 +1,8 @@
 #!/bin/bash
 
-rm -rf out*1l
+#rm -rf out*10
 
-MESHSIZE=coarse
+MESHSIZE=medium
 UNBAL=0.2
 NSTEPS=5
 STRATEGY=5
@@ -11,7 +11,7 @@ host=leftraru
 
 unset OPENSEES_USE_SHM
 
-for p in 2 4 8 10 20 40 80 100 120
+for p in 10 20 40 80 120
 do
     NP="$p"
     dir1="out_${host}_${MESHSIZE}_${NP}_${UNBAL}_${NSTEPS}_${STRATEGY}_BALANCE_NO_1l"
@@ -26,20 +26,20 @@ do
     mkdir $dir1
     cd $dir1
     ln -s ../* .
-    sbatch -n $p -J fou$p --time="00:10:00" --error="bops_$p.err" --output="bops_$p.out" <<< $'#!/bin/bash\n srun pops main1.tcl coarse 0 $NSTEPS $STRATEGY'
+    sbatch -n $p -J fou$p --time="00:45:00" --error="bops_$p.err" --output="bops_$p.out" <<< $'#!/bin/bash\n srun pops main1.tcl medium 0 $NSTEPS $STRATEGY'
     cd ..
 
     mkdir $dir2
     cd $dir2
     ln -s ../* .
-    sbatch -n $p -J fou$p --time="00:10:00" --error="bops_$p.err" --output="bops_$p.out" <<< $'#!/bin/bash\n srun pops main1.tcl coarse $UNBAL $NSTEPS $STRATEGY'
+    sbatch -n $p -J fou$p --time="00:45:00" --error="bops_$p.err" --output="bops_$p.out" <<< $'#!/bin/bash\n srun pops main1.tcl medium $UNBAL $NSTEPS $STRATEGY'
     cd ..
     
     OPENSEES_USE_SHM=True
     mkdir $dir3
     cd $dir3
     ln -s ../* .
-    sbatch -n $p -J fou$p --time="00:10:00" --error="bops_$p.err" --output="bops_$p.out" <<< $'#!/bin/bash\n srun pops main1.tcl coarse $UNBAL $NSTEPS $STRATEGY'
+    sbatch -n $p -J fou$p --time="00:45:00" --error="bops_$p.err" --output="bops_$p.out" <<< $'#!/bin/bash\n srun pops main1.tcl medium $UNBAL $NSTEPS $STRATEGY'
     cd ..
     unset OPENSEES_USE_SHM
 done
