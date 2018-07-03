@@ -46,8 +46,8 @@ source "./model_foundation_${MESHSIZE}/foundation_${MESHSIZE}.elements.tcl"
 
 
 # recorder gmsh output disp
-recorder gmsh timing updatetime eleupdatetime
-# recorder gmsh timing updatetime 
+# recorder gmsh timing updatetime eleupdatetime
+recorder gmsh timing updatetime 
 # recorder gmsh eleoutput eleResponse updatetime
 
 recorder Node -file "nodedisp.out" -time -node 1 2 3 4 -dof 1 2 3 disp
