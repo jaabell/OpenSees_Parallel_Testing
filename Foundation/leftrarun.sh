@@ -46,7 +46,7 @@ do
     cd $dir1
     ln -s ../* .
     echo "sbatch -n $p -J $jobname1" --time="${TIMEREQ}" --error="pops.stderr" --output="pops.stdout" "<<<" $'#!/bin/'"bash\\n srun pops main.tcl ${MESHSIZE} 0 ${NSTEPS} ${STRATEGY} ${PARTLEVEL}"
-    sbatch -n $p -J $jobname1 --time="${TIMEREQ}" --error="pops.stderr" --output="pops.stdout" <<< $'#!/bin/'"bash\n srun pops main.tcl ${MESHSIZE} 0 ${NSTEPS} ${STRATEGY} ${PARTLEVEL}"
+    sbatch -n $p -J $jobname1 --time="${TIMEREQ}" --error="pops.stderr" --output="pops.stdout" <<< $'#!/bin/bash\n '"srun pops main.tcl ${MESHSIZE} 0 ${NSTEPS} ${STRATEGY} ${PARTLEVEL}"
     cd ..
 
     mkdir $dir2
